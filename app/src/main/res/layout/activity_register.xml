@@ -44,6 +44,8 @@
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:backgroundTint="#F596AA"
+        android:textColor="#64363C"
         android:text="Register"
         android:id="@+id/bRegister"
         />
