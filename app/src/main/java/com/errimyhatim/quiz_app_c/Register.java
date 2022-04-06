@@ -8,11 +8,19 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
 
 public class Register extends AppCompatActivity {
     EditText etMail, etPassword, etPassword1;
     Button bRegister;
+    FirebaseAuth mAuth;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -21,8 +29,13 @@ public class Register extends AppCompatActivity {
         etPassword=(EditText) findViewById(R.id.etPassword);
         etPassword1=(EditText)findViewById(R.id.etPassword1);
         bRegister=(Button)findViewById(R.id.bRegister);
-        bRegister.setOnClickListener(new View.OnClickListener() {
-            @Override
+        mAuth = FirebaseAuth.getInstance();
+
+        bRegister.setOnClickListener(view -> {
+
+            //step 4 traitement
+            createUser();
+            /*@Override
             public void onClick(View v) {
                 String mail=etMail.getText().toString();
                 String password=etPassword.getText().toString();
@@ -53,8 +66,33 @@ public class Register extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(),"Registration Successful!  inscription réussi! التسجيل ناجح! 註冊成功  ",Toast.LENGTH_LONG).show();
                 startActivity(new Intent(Register.this,MainActivity.class));
                 finish();
-            }
+            }*/
         });
+    }
+    private void createUser(){
+        String email= etMail.getText().toString();
+        String password= etPassword.getText().toString();
+
+        if (TextUtils.isEmpty(email)){
+            etMail.setError("Email cannot be empty");
+            etMail.requestFocus();
+        }else if (TextUtils.isEmpty(password)) {
+            etPassword.setError("Password cannot be empty");
+            etPassword.requestFocus();
+        }
+        else{
+            mAuth.createUserWithEmailAndPassword(email,password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                @Override
+                public void onComplete(@NonNull Task<AuthResult> task) {
+                    if (task.isSuccessful()){
+                        Toast.makeText(Register.this, "User registered successfully", Toast.LENGTH_SHORT).show();
+                        startActivity(new Intent(Register.this, MainActivity.class));
+                    }else{
+                        Toast.makeText(Register.this, "Registration Error: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+        }
     }
 }
 
